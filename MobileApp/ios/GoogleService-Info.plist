@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>97916408146-i72dp4v1uk0d3n15vam2gfs77984jc4s.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.97916408146-i72dp4v1uk0d3n15vam2gfs77984jc4s</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBsaTtRTC7YkXCPsGr_LUrA0s_cggzOjf8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>97916408146</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.musicbymood.musicbymood</string>
+	<key>PROJECT_ID</key>
+	<string>musicrecommendationsyste-95a51</string>
+	<key>STORAGE_BUCKET</key>
+	<string>musicrecommendationsyste-95a51.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:97916408146:ios:0c5bf2b41b5eed7104ea8b</string>
+	<key>DATABASE_URL</key>
+	<string>https://musicrecommendationsyste-95a51-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>

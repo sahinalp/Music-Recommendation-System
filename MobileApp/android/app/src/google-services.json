@@ -1,40 +1,47 @@
 {
   "project_info": {
-    "project_number": "project_number",
-    "firebase_url": "firebase_url",
-    "project_id": "project_id",
-    "storage_bucket": "storage_bucket"
+    "project_number": "97916408146",
+    "firebase_url": "https://musicrecommendationsyste-95a51-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "musicrecommendationsyste-95a51",
+    "storage_bucket": "musicrecommendationsyste-95a51.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "mobilesdk_app_id",
+        "mobilesdk_app_id": "1:97916408146:android:b4542f94cfc77ba704ea8b",
         "android_client_info": {
-          "package_name": "package_name"
+          "package_name": "com.example.music_recommend_system"
         }
       },
       "oauth_client": [
         {
-          "client_id": "client_id",
-          "client_type": "client_type"
+          "client_id": "97916408146-jsfv0pite2nkuds9cs8ccveraib9eqfe.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "current_key"
+          "current_key": "AIzaSyA76uBkyvQLEB6jy78rH4p94RJh3cU7sx0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "client_id",
-              "client_type": "client_type"
+              "client_id": "97916408146-jsfv0pite2nkuds9cs8ccveraib9eqfe.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "97916408146-i72dp4v1uk0d3n15vam2gfs77984jc4s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.musicbymood.musicbymood"
+              }
             }
           ]
         }
       }
     }
   ],
-  "configuration_version": "configuration_version"
+  "configuration_version": "1"
 }
