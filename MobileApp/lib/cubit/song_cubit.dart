@@ -1,12 +1,8 @@
-// Dart imports:
+import 'dart:convert';
 import 'dart:math';
-
-// Package imports:
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// Project imports:
 import 'package:music_by_mood/constant/constants.dart';
 import '../model/song_model.dart';
 import '../service/song_repository.dart';
@@ -14,20 +10,29 @@ import '../service/song_repository.dart';
 part 'song_state.dart';
 
 class SongCubit extends Cubit<SongState> {
-  final SongRepository _songRepository = SongRepository();
+  final SongRepository _songRepository = SongRepository.instance;
+
   List<SongModel> randomSongs = [];
 
   SongCubit() : super(SongInitial());
 
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
+    await _songRepository.connection.open();
+    final tables = await _songRepository.connection.query("select * from \"MusicRecommendation\".\"database\" d \n");
     List<String>? tasteProfile = prefs.getStringList('tasteProfile');
     if (tasteProfile != null && tasteProfile.length == 5) {
-      loadRecommendedSongs(tasteProfile.map((e) => int.parse(e)).toList());
+      loadRecommendedSongs(tasteProfile.toList());
     } else {
       randomSongs = await getRandomSong();
       emit(const SongSelection(selectedSongs: []));
     }
+  }
+
+  @override
+  Future<void> close() async {
+    await _songRepository.connection.close();
+    super.close();
   }
 
   void selectSong(SongModel song) async {
@@ -47,13 +52,15 @@ class SongCubit extends Cubit<SongState> {
     }
   }
 
-  Future<void> loadRecommendedSongs(List<int> clusterLabels) async {
+
+
+  Future<void> loadRecommendedSongs(List<String> clusterLabels) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? tasteProfile = prefs.getStringList('tasteProfile');
 
     if (tasteProfile == null) {
       prefs.setStringList(
-          'tasteProfile', clusterLabels.map((e) => e.toString()).toList());
+          'tasteProfile', clusterLabels.toList());
     }
 
     try {
@@ -82,13 +89,22 @@ class SongCubit extends Cubit<SongState> {
 
   Future<List<SongModel>> getRandomSong() async {
     List<SongModel> songs = [];
-    // final int repoSize = await _songRepository.getSongsLength();
     for (var i = 0; i < 5; i++) {
       final random = Random();
       final songIndex = random.nextInt(ConstantNumbers.firabaseDatabaseSize);
+      songIndex == 0 ? 1 : songIndex;
       final randomSong = await _songRepository.getRandomSong(songIndex);
       songs.add(randomSong);
     }
     return songs;
   }
+
+  Future<List<SongModel>> search(String query) async {
+    emit(SongSearch());
+    final songs = <SongModel>[];
+      await _songRepository.search(query);
+    emit(SongSearchComplete(songs: songs));
+    return songs;
+  }
+
 }

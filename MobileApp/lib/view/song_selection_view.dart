@@ -137,7 +137,7 @@ class RandomSongList extends StatelessWidget {
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,
       firstChild: Container(
-        height: 480,
+        height: 500,
         decoration: BoxDecoration(
           color: Colors.blueAccent,
           borderRadius: BorderRadius.circular(10.0),
@@ -146,6 +146,7 @@ class RandomSongList extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: Center(
           child: ListView.builder(
+            scrollDirection: Axis.vertical,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: 6,
             itemBuilder: (context, index) {
@@ -162,9 +163,68 @@ class RandomSongList extends StatelessWidget {
                       ),
                     ),
                     Divider(color: Theme.of(context).primaryColor),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        value.length > 2
+                            ? context.read<SongCubit>().search(value)
+                            : null;
+                      },
+                    ),
                   ],
                 );
+              } else if (state is SongSearch) {
+                return const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                );
+              } else if (state is SongSearchComplete) {
+                final songs = (state as SongSearchComplete).songs;
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    final song = songs[index];
+                    return Column(
+                      children: [
+                        ListTile(
+                          dense: true,
+                          title: Text(
+                            song.songName,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontSize: 20),
+                          ),
+                          subtitle: Text(
+                            song.songId,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontSize: 12),
+                          ),
+                          onTap: () {
+                            context.read<SongCubit>().selectSong(song);
+                            if (selectedSongs.length >= 5) {
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) => const RecommendedSongsView(),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        Divider(color: Theme.of(context).primaryColor),
+                      ],
+                    );
+                  },
+                );
               }
+
               SongModel randomSong =
                   context.read<SongCubit>().randomSongs[index - 1];
               return Column(
@@ -172,14 +232,14 @@ class RandomSongList extends StatelessWidget {
                   ListTile(
                     dense: true,
                     title: Text(
-                      randomSong.name,
+                      randomSong.songName,
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium
                           ?.copyWith(fontSize: 20),
                     ),
                     subtitle: Text(
-                      randomSong.artistsId,
+                      randomSong.songId,
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium

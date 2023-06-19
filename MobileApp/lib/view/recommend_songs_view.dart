@@ -21,14 +21,13 @@ class RecommendedSongsView extends StatelessWidget {
         builder: (context, state) {
           if (state is SongLoaded) {
             final recommendedSongs = state.recommendedSongs;
-
             return ListView.builder(
               itemCount: recommendedSongs.length,
               itemBuilder: (ctx, index) {
                 final song = recommendedSongs[index];
                 return ListTile(
-                  title: Text(song.name),
-                  subtitle: Text(song.artistsId),
+                  title: Text(song.songName),
+                  subtitle: Text(song.songId),
                   onTap: () {
                     // Handle song selection if needed
                   },

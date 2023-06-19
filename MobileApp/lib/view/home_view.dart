@@ -57,7 +57,7 @@ class HomeView extends StatelessWidget {
               curve: Curves.easeInOut);
         } else if (state is SelectedSongLoading) {
           context.read<SongCubit>().loadRecommendedSongs(
-              state.selectedSongs.map((song) => song.clusterLabel).toList());
+              state.selectedSongs.map((song) => song.songCluster).toList());
         }
       }, builder: (context, state) {
         if (state is SongInitial) {
@@ -71,7 +71,7 @@ class HomeView extends StatelessWidget {
           controller: pageController,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            if (state is SongSelection)
+            // if (state is SongSelection)
               SongSelectionView(state: state, selectedSongs: selectedSongs),
             const RecommendedSongsView()
           ],

@@ -1,58 +1,57 @@
-// Package imports:
-import 'package:firebase_database/firebase_database.dart';
-
-// Project imports:
 import 'package:music_by_mood/constant/constants.dart';
+import 'package:postgres/postgres.dart';
 import '../model/song_model.dart';
 
 class SongRepository {
-  final _database = FirebaseDatabase.instance.ref();
 
-  Future<int> getSongsLength() {
-    return _database.child(ConstantStrings.firebaseDatabasePath).get().then(
-      (DataSnapshot snapshot) {
-        return snapshot.children.length;
-      },
-    );
-  }
+  static final SongRepository _instance = SongRepository._private();
+  static SongRepository get instance => _instance;
+  SongRepository._private();
+
+  final connection = PostgreSQLConnection(ConstantStrings.hostName, ConstantStrings.port, ConstantStrings.databaseName, username: ConstantStrings.username, password: ConstantStrings.password);
 
   Future<SongModel> getRandomSong(int random) async {
     SongModel song;
-    final event = await _database
-        .child('${ConstantStrings.firebaseDatabasePath}/$random')
-        .once();
+    final event = await connection.query("select * from \"MusicRecommendation\".\"database\" d where id =$random\n");
     try {
-      song = SongModel.fromJson((event.snapshot.value as Map<Object?, Object?>)
-          .cast<String, dynamic>());
+      song = SongModel.fromJson(event.first);
     } catch (e) {
       throw Error();
     }
     return (song);
-  }
+ }
 
-  Future<List<SongModel>> getRecommendedSongs(List<int> clusterLabels) async {
+  Future<List<SongModel>> getRecommendedSongs(List<String> clusterLabels) async {
     final songs = <SongModel>[];
 
-    // clusterLabels.toSet().toList(); //remove duplicates
-
     for (var clusterLabel in clusterLabels) {
-      await _database
-          .child(ConstantStrings.firebaseDatabasePath)
-          .orderByChild('cluster_label')
-          .equalTo(clusterLabel)
-          .limitToFirst(2)
-          .once()
-          .then((event) {
-        if (event.snapshot.value != null) {
-          print(event.snapshot.value);
-          final songsList = event.snapshot.value as List<Map<Object?, Object>>;
+     await connection.query("select * from \"MusicRecommendation\".\"database\" d where songcluster::int8 =${int.parse(clusterLabel)} LIMIT 2 \n")
+     .then((event) {
+        if (event != null) {
+          final songsList = event ;
           for (var songMap in songsList) {
-            final song = SongModel.fromJson(songMap.cast<String, dynamic>());
+            final song = SongModel.fromJson(songMap);
             songs.add(song);
           }
         }
       });
     }
+
+    return songs;
+  }
+
+  Future<List<SongModel>> search(String query) async {
+    final songs = <SongModel>[];
+      await connection.query("select * from \"MusicRecommendation\".\"database\" d where songname like '$query%'\n")
+          .then((event) {
+        if (event != null) {
+          final songsList = event ;
+          for (var songMap in songsList) {
+            final song = SongModel.fromJson(songMap);
+            songs.add(song);
+          }
+        }
+      });
 
     return songs;
   }

@@ -46,3 +46,14 @@ class SongError extends SongState {
   @override
   List<Object?> get props => [error];
 }
+
+class SongSearch extends SongState {}
+
+class SongSearchComplete extends SongState {
+  final List<SongModel> songs;
+
+  const SongSearchComplete({required this.songs});
+
+  @override
+  List<Object?> get props => [songs];
+}
