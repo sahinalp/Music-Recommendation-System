@@ -22,10 +22,13 @@ class SongSelectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SingleChildScrollView(
       child: Column(
         children: [
-          SelectFromRandomSongsTitle(state: state),
+          SelectFromRandomSongsTitle(
+            state: state,
+            selectedSongs: selectedSongs,
+          ),
           if (state is SongInitial)
             const SizedBox(
               height: 300,
@@ -45,8 +48,10 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
   const SelectFromRandomSongsTitle({
     super.key,
     required this.state,
+    required this.selectedSongs,
   });
 
+  final List<SongModel> selectedSongs;
   final SongState state;
 
   @override
@@ -57,7 +62,7 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,
       firstChild: Container(
-        height: 150.0,
+        height: 200.0,
         decoration: BoxDecoration(
           color: Colors.red.shade400,
           borderRadius: BorderRadius.circular(10.0),
@@ -68,19 +73,37 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.white),
+                  child: Text('Önerileri Listele',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(
+                              fontSize: 24,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center),
+                  onPressed: () {
+                    BlocProvider.of<SongCubit>(context).emit(
+                        SelectedSongLoading(selectedSongs: selectedSongs));
+                    List<String> clusterLabels=[];
+                    for(var item in selectedSongs){
+                      clusterLabels.add(item.songCluster);
+                    }
+                    BlocProvider.of<SongCubit>(context).loadRecommendedSongs(clusterLabels);
+                    Navigator.of(context).push(
+                      MaterialPageRoute<SongCubit>(
+                        builder: (context) => BlocProvider<SongCubit>(
+                          create: (context) => SongCubit(),
+                          child: const RecommendedSongsView(),
+                        ),
+                      ),
+                    );
+                  }),
               Text(
-                'Lets Create Your Taste Profile',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineMedium
-                    ?.copyWith(fontSize: 24),
-                textAlign: TextAlign.center,
-              ),
-              Divider(
-                color: Theme.of(context).primaryColor,
-              ),
-              Text(
-                'Select 5 songs from the song lists below',
+                'Ekrandaki rastgele yansıyan şarkılardan veya arama yaparak çıkan şarkılardan seçim yapabilirsiniz',
                 style: Theme.of(context)
                     .textTheme
                     .headlineMedium
@@ -119,7 +142,7 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
   }
 }
 
-class RandomSongList extends StatelessWidget {
+class RandomSongList extends StatefulWidget {
   const RandomSongList({
     super.key,
     required this.state,
@@ -130,138 +153,151 @@ class RandomSongList extends StatelessWidget {
   final SongState state;
 
   @override
+  State<RandomSongList> createState() => _RandomSongListState();
+}
+
+class _RandomSongListState extends State<RandomSongList> {
+  @override
   Widget build(BuildContext context) {
     return AnimatedCrossFade(
       duration: const Duration(milliseconds: 250),
-      crossFadeState: state is SongSelection
+      crossFadeState: widget.state is SongSelection
           ? CrossFadeState.showFirst
-          : CrossFadeState.showSecond,
+          : CrossFadeState.showFirst,
       firstChild: Container(
-        height: 500,
+        height: 440,
         decoration: BoxDecoration(
           color: Colors.blueAccent,
           borderRadius: BorderRadius.circular(10.0),
         ),
         margin: const EdgeInsets.all(10.0),
         padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 6,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return Column(
-                  children: [
-                    Center(
-                      child: Text(
-                        'Selected songs: ${selectedSongs.length}',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(fontSize: 16),
-                      ),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  Center(
+                    child: Text(
+                      "Seçilen random şarkı sayısı: ${widget.selectedSongs.length}",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(fontSize: 16),
                     ),
-                    Divider(color: Theme.of(context).primaryColor),
-                    TextField(
-                      decoration: InputDecoration(
+                  ),
+                  Divider(color: Theme.of(context).primaryColor),
+                  Container(
+                    color: Colors.white60,
+                    child: TextField(
+                      decoration: const InputDecoration(
                         hintText: 'Search',
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
+                        prefixIcon: Icon(Icons.search),
                       ),
                       onChanged: (value) {
                         value.length > 2
                             ? context.read<SongCubit>().search(value)
+                            : value.isEmpty
+                            ? BlocProvider.of<SongCubit>(context)
+                            .emit(RandomSongLoading())
                             : null;
                       },
                     ),
-                  ],
-                );
-              } else if (state is SongSearch) {
-                return const Center(
-                  child: CircularProgressIndicator.adaptive(),
-                );
-              } else if (state is SongSearchComplete) {
-                final songs = (state as SongSearchComplete).songs;
-                return ListView.builder(
-                  itemBuilder: (context, index) {
-                    final song = songs[index];
-                    return Column(
-                      children: [
-                        ListTile(
-                          dense: true,
-                          title: Text(
-                            song.songName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(fontSize: 20),
-                          ),
-                          subtitle: Text(
-                            song.songId,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(fontSize: 12),
-                          ),
-                          onTap: () {
-                            context.read<SongCubit>().selectSong(song);
-                            if (selectedSongs.length >= 5) {
-                              Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                  builder: (context) => const RecommendedSongsView(),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                        Divider(color: Theme.of(context).primaryColor),
-                      ],
-                    );
-                  },
-                );
-              }
-
-              SongModel randomSong =
-                  context.read<SongCubit>().randomSongs[index - 1];
-              return Column(
-                children: [
-                  ListTile(
-                    dense: true,
-                    title: Text(
-                      randomSong.songName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(fontSize: 20),
-                    ),
-                    subtitle: Text(
-                      randomSong.songId,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(fontSize: 12),
-                    ),
-                    onTap: () {
-                      context.read<SongCubit>().selectSong(randomSong);
-                      if (selectedSongs.length >= 5) {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => const RecommendedSongsView(),
-                          ),
-                        );
-                      }
-                    },
                   ),
-                  Divider(color: Theme.of(context).primaryColor),
                 ],
-              );
-            },
-          ),
+              ),
+            ),
+            Expanded(
+              flex: 8,
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: 6,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  if (widget.state is SongSearchComplete) {
+                    final songs = (widget.state as SongSearchComplete).songs;
+                    return  SizedBox(
+                      height: 500,
+                      child: ListView.builder(
+                        itemCount: songs.length,
+                        itemBuilder: (context, index) {
+                          final song = songs[index];
+                          return Column(
+                            children: [
+                              ListTile(
+                                // dense: true,
+                                title: Text(
+                                  song.songName,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(fontSize: 20),
+                                ),
+                                subtitle: Text(
+                                  song.songId,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(fontSize: 12),
+                                ),
+                                onTap: () {
+                                  //BlocProvider.of<SongCubit>(context).selectedSongs.add(song);
+                                  widget.selectedSongs.add(song);
+                                  songs.removeWhere((element) => element.id == song.id);
+                                  setState(() {});
+                                },
+                              ),
+                              Divider(color: Theme.of(context).primaryColor),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  }
+
+                  SongModel randomSong = index!=0?
+                       context.read<SongCubit>().randomSongs[index - 1]:context.read<SongCubit>().randomSongs[index];
+
+                  return Column(
+                    children: [
+                      ListTile(
+                        dense: true,
+                        title: Text(
+                          randomSong.songName,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(fontSize: 20),
+                        ),
+                        subtitle: Text(
+                          randomSong.songId,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(fontSize: 12),
+                        ),
+                        onTap: () {
+                          BlocProvider.of<SongCubit>(context)
+                              .selectSong(randomSong);
+                          if (widget.selectedSongs.length >= 5) {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (context) =>
+                                    const RecommendedSongsView(),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      Divider(color: Theme.of(context).primaryColor),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
       secondChild: const SizedBox(

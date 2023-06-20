@@ -4,36 +4,73 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_by_mood/view/home_view.dart';
+import 'package:music_by_mood/view/song_selection_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Project imports:
 import '../cubit/song_cubit.dart';
 
-class RecommendedSongsView extends StatelessWidget {
+class RecommendedSongsView extends StatefulWidget {
   const RecommendedSongsView({super.key});
 
   @override
+  State<RecommendedSongsView> createState() => _RecommendedSongsViewState();
+}
+
+class _RecommendedSongsViewState extends State<RecommendedSongsView> {
+
+  Future<void> _launchUrl(Uri url) async {
+    if (!await launchUrl(url)) {
+      print("not open");
+    }
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CupertinoNavigationBar(
-        middle: Text('Recommended Songs'),
+      appBar: AppBar(
+        title: const Text('Recommended Songs'),
+       leading:
+          IconButton(
+            onPressed: () {
+              BlocProvider.of<SongCubit>(context).emit(SongInitial());
+              Navigator.of(context).push(
+                MaterialPageRoute<SongCubit>(
+                  builder: (context) => BlocProvider<SongCubit>(
+                    create: (context) => SongCubit(),
+                    child: HomeView(),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.arrow_back_ios_sharp),
+          ),
+
       ),
       body: BlocBuilder<SongCubit, SongState>(
         builder: (context, state) {
           if (state is SongLoaded) {
             final recommendedSongs = state.recommendedSongs;
-            return ListView.builder(
-              itemCount: recommendedSongs.length,
-              itemBuilder: (ctx, index) {
-                final song = recommendedSongs[index];
-                return ListTile(
-                  title: Text(song.songName),
-                  subtitle: Text(song.songId),
-                  onTap: () {
-                    // Handle song selection if needed
-                  },
-                );
-              },
-            );
+            return recommendedSongs.isEmpty
+                ? const Center(child: Text("Önce şarkı seçiniz."))
+                : ListView.builder(
+                    itemCount: recommendedSongs.length,
+                    itemBuilder: (ctx, index) {
+                      final song = recommendedSongs[index];
+                      return ListTile(
+                        title: Text(song.songName),
+                        subtitle: Text(song.songId),
+                        onTap: () async {
+                          Uri url =Uri.parse(song.uri);
+                          _launchUrl(url);
+                          // Handle song selection if needed
+                        },
+                      );
+                    },
+                  );
+          } else if (state is SongInitial) {
+            return const Center(child: Text("Önce şarkı seçiniz."));
           } else {
             return const Center(child: CircularProgressIndicator.adaptive());
           }

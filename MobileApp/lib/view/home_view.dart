@@ -1,10 +1,8 @@
 // Flutter imports:
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 // Project imports:
 import '../cubit/song_cubit.dart';
 import '../model/song_model.dart';
@@ -20,21 +18,21 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     List<SongModel> selectedSongs = [];
     return Scaffold(
-      appBar: CupertinoNavigationBar(
-        middle: Text(
-          'Song Recommender',
-          style: CupertinoTheme.of(context)
-              .textTheme
-              .navTitleTextStyle
-              .copyWith(
-                color: CupertinoTheme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-              ),
-        ),
-        brightness: Theme.of(context).brightness,
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-      ),
+      // appBar: CupertinoNavigationBar(
+      //   middle: Text(
+      //     'Song Recommender',
+      //     style: CupertinoTheme.of(context)
+      //         .textTheme
+      //         .navTitleTextStyle
+      //         .copyWith(
+      //           color: CupertinoTheme.of(context).brightness == Brightness.dark
+      //               ? Colors.white
+      //               : Colors.black,
+      //         ),
+      //   ),
+      //   brightness: Theme.of(context).brightness,
+      //   backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+      // ),
       body: BlocConsumer<SongCubit, SongState>(listener: (context, state) {
         if (state is SongError) {
           showDialog(

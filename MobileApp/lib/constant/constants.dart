@@ -8,5 +8,5 @@ class ConstantStrings {
 }
 
 class ConstantNumbers {
-  static const int firabaseDatabaseSize = 30;
+  static const int firabaseDatabaseSize = 69764;
 }
