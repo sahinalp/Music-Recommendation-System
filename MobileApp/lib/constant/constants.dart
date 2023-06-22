@@ -10,3 +10,8 @@ class ConstantStrings {
 class ConstantNumbers {
   static const int firabaseDatabaseSize = 69764;
 }
+
+enum WhichMethod{
+  random,
+  search,
+}

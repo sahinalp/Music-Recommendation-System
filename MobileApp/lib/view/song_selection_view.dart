@@ -1,10 +1,10 @@
 // Flutter imports:
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:music_by_mood/constant/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // Project imports:
 import '../cubit/song_cubit.dart';
 import '../model/song_model.dart';
@@ -54,6 +54,7 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
   final List<SongModel> selectedSongs;
   final SongState state;
 
+
   @override
   Widget build(BuildContext context) {
     return AnimatedCrossFade(
@@ -86,21 +87,12 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
                               fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center),
                   onPressed: () {
-                    BlocProvider.of<SongCubit>(context).emit(
-                        SelectedSongLoading(selectedSongs: selectedSongs));
                     List<String> clusterLabels=[];
                     for(var item in selectedSongs){
                       clusterLabels.add(item.songCluster);
+                      context.read<SongCubit>().selectSong(item);
                     }
-                    BlocProvider.of<SongCubit>(context).loadRecommendedSongs(clusterLabels);
-                    Navigator.of(context).push(
-                      MaterialPageRoute<SongCubit>(
-                        builder: (context) => BlocProvider<SongCubit>(
-                          create: (context) => SongCubit(),
-                          child: const RecommendedSongsView(),
-                        ),
-                      ),
-                    );
+                    context.read<SongCubit>().loadRecommendedSongs(clusterLabels);
                   }),
               Text(
                 'Ekrandaki rastgele yansıyan şarkılardan veya arama yaparak çıkan şarkılardan seçim yapabilirsiniz',
@@ -198,10 +190,7 @@ class _RandomSongListState extends State<RandomSongList> {
                       onChanged: (value) {
                         value.length > 2
                             ? context.read<SongCubit>().search(value)
-                            : value.isEmpty
-                            ? BlocProvider.of<SongCubit>(context)
-                            .emit(RandomSongLoading())
-                            : null;
+                            : context.read<SongCubit>().getRandomSong();
                       },
                     ),
                   ),

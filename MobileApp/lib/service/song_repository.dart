@@ -16,7 +16,7 @@ class SongRepository {
   Future<SongModel> getRandomSong(int random) async {
     SongModel song;
     final event = await connection.query(
-        "select * from \"MusicRecommendation\".\"database\" d where id =$random\n");
+        "select * from \"MusicRecommendation\".\"database\" d where id =$random order by popularity desc \n");
     try {
       song = SongModel.fromJson(event.first);
     } catch (e) {

@@ -22,12 +22,12 @@ class SongCubit extends Cubit<SongState> {
     await _songRepository.connection.open():null;
     //final tables = await _songRepository.connection.query("select * from \"MusicRecommendation\".\"database\" d \n");
     List<String>? tasteProfile = prefs.getStringList('tasteProfile');
-    if (tasteProfile != null && tasteProfile.length == 5) {
-      loadRecommendedSongs(tasteProfile.toList());
-    } else {
+    // if (tasteProfile != null && tasteProfile.length == 5) {
+    //   loadRecommendedSongs(tasteProfile.toList());
+    // } else {
       randomSongs = await getRandomSong();
       emit(const SongSelection(selectedSongs: []));
-    }
+    //}
   }
 
   // @override
@@ -58,8 +58,10 @@ class SongCubit extends Cubit<SongState> {
   Future<void> loadRecommendedSongs(List<String> clusterLabels) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? tasteProfile = prefs.getStringList('tasteProfile');
-
-    if (tasteProfile == null) {
+    if (tasteProfile != null) {
+      for (int i = 0; i < tasteProfile!.length; i++) {
+        clusterLabels.add(tasteProfile[i]);
+      }
       prefs.setStringList(
           'tasteProfile', clusterLabels.toList());
     }
@@ -69,7 +71,9 @@ class SongCubit extends Cubit<SongState> {
           await _songRepository.getRecommendedSongs(clusterLabels);
 
       emit(SongLoaded(recommendedSongs: recommendedSongs));
+     print(state.props);
     } catch (error) {
+      print("helllll $error");
       emit(const SongError(error: 'Failed to load recommended songs.'));
     }
   }

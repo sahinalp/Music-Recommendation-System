@@ -1,14 +1,9 @@
 // Flutter imports:
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:music_by_mood/view/home_view.dart';
-import 'package:music_by_mood/view/song_selection_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 // Project imports:
 import '../cubit/song_cubit.dart';
 
@@ -22,10 +17,11 @@ class RecommendedSongsView extends StatefulWidget {
 class _RecommendedSongsViewState extends State<RecommendedSongsView> {
 
   Future<void> _launchUrl(Uri url) async {
-    if (!await launchUrl(url)) {
-      print("not open");
-    }
+    await launchUrl(url);
   }
+  /*
+  str(x.content).split('by')[1].split('|')[0].strip()
+  * */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +47,7 @@ class _RecommendedSongsViewState extends State<RecommendedSongsView> {
       body: BlocBuilder<SongCubit, SongState>(
         builder: (context, state) {
           if (state is SongLoaded) {
-            final recommendedSongs = state.recommendedSongs;
+            final recommendedSongs = state.recommendedSongs.toList();
             return recommendedSongs.isEmpty
                 ? const Center(child: Text("Önce şarkı seçiniz."))
                 : ListView.builder(
