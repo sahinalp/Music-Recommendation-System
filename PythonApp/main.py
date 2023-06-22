@@ -70,7 +70,7 @@ class loadui(QMainWindow):
                 self.textEdit_list.append(value)
             self.progress_value+=20
             self.progressBar.setValue(self.progress_value)
-            if self.progress_value==20:
+            if self.progress_value==100:
                 self.pushButton_create.setEnabled(True)
                 self.spinBox_recommend_count.setEnabled(True)
                 self.pushButton_addList.setEnabled(False)
