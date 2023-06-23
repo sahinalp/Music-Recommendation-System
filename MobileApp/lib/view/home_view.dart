@@ -3,36 +3,49 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 // Project imports:
-import '../cubit/song_cubit.dart';
-import '../model/song_model.dart';
-import 'recommend_songs_view.dart';
-import 'song_selection_view.dart';
+import 'package:music_by_mood/cubit/song_cubit.dart';
+import 'package:music_by_mood/view/recommend_songs_view.dart';
+import 'package:music_by_mood/view/song_selection_view.dart';
 
-class HomeView extends StatelessWidget {
-  HomeView({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
 
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   final PageController pageController = PageController(initialPage: 0);
+  int currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
-    List<SongModel> selectedSongs = [];
     return Scaffold(
-      // appBar: CupertinoNavigationBar(
-      //   middle: Text(
-      //     'Song Recommender',
-      //     style: CupertinoTheme.of(context)
-      //         .textTheme
-      //         .navTitleTextStyle
-      //         .copyWith(
-      //           color: CupertinoTheme.of(context).brightness == Brightness.dark
-      //               ? Colors.white
-      //               : Colors.black,
-      //         ),
-      //   ),
-      //   brightness: Theme.of(context).brightness,
-      //   backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-      // ),
+      appBar: AppBar(
+        title: Text(
+          currentPage == 0 ? 'Müzik Öneri Sistemi' : 'Önerilen Şarkılar',
+          style: CupertinoTheme.of(context).textTheme.navTitleTextStyle.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+        ),
+        systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
+        elevation: 0.0,
+        backgroundColor: Colors.transparent,
+        leading: currentPage == 1
+            ? IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () {
+                  pageController.animateToPage(0, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+                  context.read<SongCubit>().initialize();
+                  setState(() {
+                    currentPage = 0;
+                  });
+                },
+              )
+            : null,
+      ),
       body: BlocConsumer<SongCubit, SongState>(listener: (context, state) {
         if (state is SongError) {
           showDialog(
@@ -50,31 +63,33 @@ class HomeView extends StatelessWidget {
           );
         } else if (state is SongLoaded) {
           // Navigate to recommended songs screen
-          pageController.animateToPage(1,
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeInOut);
+          pageController.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+          setState(() {
+            currentPage = 1;
+          });
         } else if (state is SelectedSongLoading) {
-          context.read<SongCubit>().loadRecommendedSongs(
-              state.selectedSongs.map((song) => song.songCluster).toList());
+          context.read<SongCubit>().loadRecommendedSongs(context.read<SongCubit>().selectedSongs.map((song) => song.songCluster).toList());
         }
       }, builder: (context, state) {
         if (state is SongInitial) {
           context.read<SongCubit>().initialize();
         }
-        selectedSongs = state is SongSelection
-            ? state.selectedSongs.toList()
-            : selectedSongs;
 
-        return PageView(
-          controller: pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            // if (state is SongSelection)
-              SongSelectionView(state: state, selectedSongs: selectedSongs),
-            const RecommendedSongsView()
-          ],
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: PageView(
+            controller: pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              // if (state is SongSelection)
+              SongSelectionView(state: state, selectedSongs: context.read<SongCubit>().selectedSongs),
+              const RecommendedSongsView()
+            ],
+          ),
         );
-      }),
+      },),
     );
   }
 }

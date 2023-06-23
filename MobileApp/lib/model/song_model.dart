@@ -1,15 +1,6 @@
 import 'package:postgres/postgres.dart';
 
 class SongModel {
-  final int id;
-  final String songId;
-  final String songName;
-  final String songCluster;
-  final int popularity;
-  final String availableMarkets;
-  final String country;
-  final String lyrics;
-  final String uri;
 
   SongModel({
     required this.availableMarkets,
@@ -36,4 +27,13 @@ class SongModel {
       lyrics: resultRow[8],
     );
   }
+  final int id;
+  final String songId;
+  final String songName;
+  final String songCluster;
+  final int popularity;
+  final String availableMarkets;
+  final String country;
+  final String lyrics;
+  final String uri;
 }

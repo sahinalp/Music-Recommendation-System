@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // Project imports:
 import 'package:music_by_mood/view/home_view.dart';
-import 'package:postgres/postgres.dart';
-import 'constant/constants.dart';
-import 'cubit/song_cubit.dart';
+import 'package:music_by_mood/cubit/song_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +27,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       home: BlocProvider(
         create: (context) => SongCubit(),
-        child: HomeView(),
+        child: const HomeView(),
       ),
     );
   }

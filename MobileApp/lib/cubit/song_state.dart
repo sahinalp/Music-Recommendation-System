@@ -12,36 +12,36 @@ class SongInitial extends SongState {}
 class RandomSongLoading extends SongState {}
 
 class SongSelection extends SongState {
-  final List<SongModel> selectedSongs;
 
   const SongSelection({this.selectedSongs = const []});
+  final List<SongModel> selectedSongs;
 
   @override
   List<Object?> get props => [selectedSongs];
 }
 
 class SelectedSongLoading extends SongState {
-  final List<SongModel> selectedSongs;
 
   const SelectedSongLoading({required this.selectedSongs});
+  final List<SongModel> selectedSongs;
 
   @override
   List<Object?> get props => [selectedSongs];
 }
 
 class SongLoaded extends SongState {
-  final List<SongModel> recommendedSongs;
 
   const SongLoaded({required this.recommendedSongs});
+  final List<SongModel> recommendedSongs;
 
   @override
   List<Object?> get props => [recommendedSongs];
 }
 
 class SongError extends SongState {
-  final String error;
 
   const SongError({required this.error});
+  final String error;
 
   @override
   List<Object?> get props => [error];
@@ -50,9 +50,9 @@ class SongError extends SongState {
 class SongSearch extends SongState {}
 
 class SongSearchComplete extends SongState {
-  final List<SongModel> songs;
 
   const SongSearchComplete({required this.songs});
+  final List<SongModel> songs;
 
   @override
   List<Object?> get props => [songs];
