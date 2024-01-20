@@ -11,10 +11,6 @@
 
 ## Screenshots
 
-
-![Screenshot_20240120_201949](https://github.com/sahinalp/Music-Recommendation-System/assets/112012287/7260452f-9b0f-44bb-8f7d-22c10adc24db)
-
-
-![Screenshot_20240120_201655](https://github.com/sahinalp/Music-Recommendation-System/assets/112012287/dbf23c56-4be2-40da-b13b-12b92bb5e525)
+![image](https://github.com/sahinalp/Music-Recommendation-System/assets/112012287/037a463a-0e24-45da-af1b-b2d7fd23d8fd)   ![image](https://github.com/sahinalp/Music-Recommendation-System/assets/112012287/8d28dbd5-6d19-49d9-9e35-89cf1f660e62)
 
 
