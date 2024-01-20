@@ -1,7 +1,9 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 // Project imports:
 import 'package:music_by_mood/cubit/song_cubit.dart';
 import 'package:music_by_mood/model/song_model.dart';
@@ -32,7 +34,8 @@ class SongSelectionView extends StatelessWidget {
                 child: CircularProgressIndicator.adaptive(),
               ),
             ),
-          if (state is! SongInitial) RandomSongList(state: state, selectedSongs: selectedSongs),
+          if (state is! SongInitial)
+            RandomSongList(state: state, selectedSongs: selectedSongs),
           const SizedBox(height: 10),
           ElevatedButton(
             style: TextButton.styleFrom(
@@ -82,22 +85,27 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedCrossFade(
       duration: const Duration(milliseconds: 250),
-      crossFadeState: state is! SelectedSongLoading ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      crossFadeState: state is! SelectedSongLoading
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
       firstChild: Container(
         height: 150.0,
         decoration: BoxDecoration(
-          color: Colors.orange,
+          color: Colors.orangeAccent,
           borderRadius: BorderRadius.circular(10.0),
         ),
-        margin: const EdgeInsets.all(10.0),
+        margin: const EdgeInsets.all(5.0),
         padding: const EdgeInsets.all(10.0),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                'Aşağıda görüntüleyebileceğiniz rastgele şarkılardan veya arama yaparak seçim(ler) yapın',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 20),
+                'Aşağıdaki rastgele şarkılardan oluşan listeden sevdiğiniz şarkıları seçebilirsiniz veya arama yaparak sevdiğiniz şarkıyı bulabilirsiniz.',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineMedium
+                    ?.copyWith(fontSize: 20, color: Colors.white70),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -118,7 +126,9 @@ class SelectFromRandomSongsTitle extends StatelessWidget {
             children: [
               Text(
                 'Please wait...\nWe are creating suggestions based on your taste',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 24),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontSize: 24,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -145,15 +155,18 @@ class RandomSongList extends StatefulWidget {
 
 class _RandomSongListState extends State<RandomSongList> {
   final TextEditingController controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return AnimatedCrossFade(
       duration: const Duration(milliseconds: 250),
-      crossFadeState: widget.state is SongSelection ? CrossFadeState.showFirst : CrossFadeState.showFirst,
+      crossFadeState: widget.state is SongSelection
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showFirst,
       firstChild: Container(
         height: 540,
         decoration: BoxDecoration(
-          color: Colors.deepPurple,
+          color: Colors.deepPurple.shade400,
           borderRadius: BorderRadius.circular(10.0),
         ),
         margin: const EdgeInsets.all(10.0),
@@ -168,10 +181,13 @@ class _RandomSongListState extends State<RandomSongList> {
                     Center(
                       child: Text(
                         'Seçilen rastgele şarkı sayısı: ${widget.selectedSongs.length}',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 16),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(fontSize: 16, color: Colors.white70),
                       ),
                     ),
-                    Divider(color: Theme.of(context).primaryColor),
+                    Divider(color: Theme.of(context).highlightColor),
                     TextField(
                       controller: controller,
                       cursorColor: Colors.white,
@@ -183,7 +199,7 @@ class _RandomSongListState extends State<RandomSongList> {
                         hintText: 'Search',
                         prefixIcon: const Icon(
                           Icons.search,
-                          color: Colors.white,
+                          color: Colors.white70,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -191,23 +207,33 @@ class _RandomSongListState extends State<RandomSongList> {
                             color: Colors.white,
                           ),
                         ),
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(fontSize: 20, color: Colors.white70),
                       ),
                       onChanged: (value) async {
-                        if (context.read<SongCubit>().selectedSongs.length == 5) {
+                        if (context.read<SongCubit>().selectedSongs.length ==
+                            5) {
                           controller.clear();
                           return;
                         }
                         if (value.length > 2) {
                           await context.read<SongCubit>().search(value);
                         } else {
-                          if (value.isEmpty) await context.read<SongCubit>().refreshRandomSongs();
+                          if (value.isEmpty)
+                            await context
+                                .read<SongCubit>()
+                                .refreshRandomSongs();
                         }
                       },
                     ),
                   ],
                 ),
               ),
-            if (widget.state is RandomSongLoading || widget.state is SongSearch || widget.state is SelectedSongLoading)
+            if (widget.state is RandomSongLoading ||
+                widget.state is SongSearch ||
+                widget.state is SelectedSongLoading)
               const Expanded(
                 flex: 4,
                 child: Center(
@@ -222,18 +248,25 @@ class _RandomSongListState extends State<RandomSongList> {
                 child: ListView.builder(
                   itemCount: (widget.state as SongSearchComplete).songs.length,
                   itemBuilder: (context, index) {
-                    final song = (widget.state as SongSearchComplete).songs[index];
+                    final song =
+                        (widget.state as SongSearchComplete).songs[index];
                     return Column(
                       children: [
                         ListTile(
                           dense: true,
                           title: Text(
                             song.songName,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 20),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontSize: 20),
                           ),
                           subtitle: Text(
                             song.songId,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 12),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontSize: 12),
                           ),
                           onTap: () {
                             context.read<SongCubit>().selectSong(song);
@@ -253,7 +286,8 @@ class _RandomSongListState extends State<RandomSongList> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: 5,
                   itemBuilder: (context, index) {
-                    SongModel randomSong = context.read<SongCubit>().randomSongs[index];
+                    SongModel randomSong =
+                        context.read<SongCubit>().randomSongs[index];
 
                     return Column(
                       children: [
@@ -263,17 +297,23 @@ class _RandomSongListState extends State<RandomSongList> {
                           minVerticalPadding: 0.0,
                           title: Text(
                             randomSong.songName,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 20),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontSize: 20, color: Colors.white),
                           ),
                           subtitle: Text(
                             randomSong.songId,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 12),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontSize: 12, color: Colors.white70),
                           ),
                           onTap: () {
                             context.read<SongCubit>().selectSong(randomSong);
                           },
                         ),
-                        Divider(color: Theme.of(context).primaryColor),
+                        Divider(color: Theme.of(context).highlightColor),
                       ],
                     );
                   },
