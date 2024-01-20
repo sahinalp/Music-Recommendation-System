@@ -1,8 +1,10 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 // Project imports:
 import 'package:music_by_mood/cubit/song_cubit.dart';
 
@@ -15,7 +17,9 @@ class RecommendedSongsView extends StatefulWidget {
 
 class _RecommendedSongsViewState extends State<RecommendedSongsView> {
   Future<void> _launchUrl(Uri url) async {
-    await launchUrl(url);
+    if (await launchUrl(url)) {
+      await _launchUrl(url);
+    }
   }
 
   /*
@@ -39,7 +43,13 @@ class _RecommendedSongsViewState extends State<RecommendedSongsView> {
                         subtitle: Text(song.songId),
                         onTap: () async {
                           Uri url = Uri.parse(song.uri);
-                          await _launchUrl(url);
+                          String uri = url.path;
+                          String spotifyUrl=uri.replaceAll("track:", "https://open.spotify.com/track/");
+                          url =Uri.parse(spotifyUrl);
+                          if (await launchUrl(url)) {
+                            await _launchUrl(url);
+                          }
+
                           // Handle song selection if needed
                         },
                       );
