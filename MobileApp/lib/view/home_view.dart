@@ -27,7 +27,7 @@ class _HomeViewState extends State<HomeView> {
         title: Text(
           currentPage == 0 ? 'Müzik Öneri Sistemi' : 'Önerilen Şarkılar',
           style: CupertinoTheme.of(context).textTheme.navTitleTextStyle.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.primary,
               ),
         ),
         systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
